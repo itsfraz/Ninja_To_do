@@ -114,6 +114,7 @@ class TodoApp {
         this.saveAndRender();
         this.elements.taskInput.value = '';
         this.elements.taskDateTime.value = '';
+        this.updateStatistics();
         // Clear selected tags after adding
         this.selectedTags.clear();
         this.updateTagUI();
@@ -122,6 +123,7 @@ class TodoApp {
     deleteTask(id) {
         this.tasks = this.tasks.filter(task => task.id !== id);
         this.saveAndRender();
+        this.updateStatistics();
     }
 
     toggleComplete(id) {
@@ -129,6 +131,7 @@ class TodoApp {
             task.id === id ? {...task, completed: !task.completed} : task
         );
         this.saveAndRender();
+        this.updateStatistics();
     }
 
     editTask(id, newText, newDateTime) {
@@ -140,6 +143,7 @@ class TodoApp {
             } : task
         );
         this.saveAndRender();
+        this.updateStatistics();
     }
 
     // Theme management
@@ -422,6 +426,7 @@ class TodoApp {
     clearCompleted() {
         this.tasks = this.tasks.filter(t => !t.completed);
         this.saveAndRender();
+        this.updateStatistics();
     }
 
     // Tag Management
@@ -473,6 +478,7 @@ class TodoApp {
 
         this.selectedTasks.clear()
         this.saveAndRender();
+        this.updateStatistics(); 
     }
 
     showCalendar() {
@@ -517,13 +523,22 @@ updateStatistics() {
     const workTasks = this.tasks.filter(t => t.tags.includes('work')).length;
     const personalTasks = this.tasks.filter(t => t.tags.includes('personal')).length;
     const shoppingTasks = this.tasks.filter(t => t.tags.includes('shopping')).length;
+    const overdueTasks = this.tasks.filter(t => 
+        !t.completed && new Date(t.datetime) < new Date()
+    ).length;
 
-    document.getElementById('statsTotalTasks').textContent = totalTasks;
-    document.getElementById('statsCompletedTasks').textContent = completedTasks;
-    document.getElementById('statsPendingTasks').textContent = pendingTasks;
-    document.getElementById('statsWorkTasks').textContent = workTasks;
-    document.getElementById('statsPersonalTasks').textContent = personalTasks;
-    document.getElementById('statsShoppingTasks').textContent = shoppingTasks;
+     // Update the DOM
+    if (document.getElementById('statsTotalTasks')) {
+        document.getElementById('statsTotalTasks').textContent = totalTasks;
+        document.getElementById('statsCompletedTasks').textContent = completedTasks;
+        document.getElementById('statsPendingTasks').textContent = pendingTasks;
+        document.getElementById('statsWorkTasks').textContent = workTasks;
+        document.getElementById('statsPersonalTasks').textContent = personalTasks;
+        document.getElementById('statsShoppingTasks').textContent = shoppingTasks;
+        document.getElementById('statsOverdueTasks').textContent = overdueTasks;
+    }
+     // Also update the progress bar
+    this.updateProgressBar(totalTasks, completedTasks);
 }
 
     toggleCalendarInline() {
