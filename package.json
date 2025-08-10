@@ -1,0 +1,20 @@
+{
+  "name": "code_alpha_to_do_list",
+  "version": "1.0.0",
+  "description": "Task Ninja is a powerful and intuitive web-based To-Do List application designed to help you manage your daily tasks efficiently. With a clean interface and essential features, it's your ultimate companion for staying organized and productive.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsfraz/Ninja_To_do.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsfraz/Ninja_To_do/issues"
+  },
+  "homepage": "https://github.com/itsfraz/Ninja_To_do#readme"
+}

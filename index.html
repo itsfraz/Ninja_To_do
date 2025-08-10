@@ -3,37 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ninja-to-do</title>
+    <title>Task Ninja</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">
-                    <i class="fas fa-rocket"></i>
-                    Task Ninja
-                </h1>
-                <div class="header-controls">
-                    <button class="icon-btn" onclick="todoApp.toggleTheme()">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="icon-btn" onclick="todoApp.showHelp()">
-                        <i class="fas fa-question"></i>
-                    </button>
-                </div>
+            <h1 class="app-title">
+                <i class="fas fa-rocket"></i>
+                Task Ninja
+            </h1>
+            <div class="header-controls">
+                <button class="icon-btn" data-action="theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn" data-action="help">
+                    <i class="fas fa-question"></i>
+                </button>
             </div>
         </header>
 
         <main class="app-main">
             <section class="quick-actions">
-                <button class="quick-btn" onclick="todoApp.showCalendar()">
+                <button class="quick-btn" data-action="calendar">
                     <i class="fas fa-calendar-alt"></i>
                     Calendar
                 </button>
-                <button class="quick-btn" onclick="todoApp.showStatistics()">
+                <button class="quick-btn" data-action="stats">
                     <i class="fas fa-chart-pie"></i>
                     Stats
                 </button>
@@ -41,13 +40,16 @@
 
             <section class="task-controls">
                 <div class="input-group">
-                    <input type="text" id="taskInput" placeholder="What's your next mission?" 
-                           class="task-input" autofocus>
-                    <div class="datetime-container">
-                        <input type="text" id="taskDateTime" class="datetime-input" 
-                               placeholder="Select date & time">
-                    </div>
-                    <button class="primary-btn" id="addTaskBtn">
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        class="task-input" 
+                        placeholder="Enter your task...">
+                    <input 
+                        type="datetime-local" 
+                        id="taskDateTime" 
+                        class="datetime-input">
+                    <button id="addTaskBtn" class="primary-btn">
                         <i class="fas fa-plus"></i> Add Task
                     </button>
                 </div>
@@ -56,9 +58,9 @@
                     <div class="control-group">
                         <label><i class="fas fa-tags"></i> Tags:</label>
                         <div class="tag-selector">
-                            <span class="tag work" onclick="todoApp.toggleTag('work')">Work</span>
-                            <span class="tag personal" onclick="todoApp.toggleTag('personal')">Personal</span>
-                            <span class="tag shopping" onclick="todoApp.toggleTag('shopping')">Shopping</span>
+                            <span class="tag" data-tag="work">Work</span>
+                            <span class="tag" data-tag="personal">Personal</span>
+                            <span class="tag" data-tag="shopping">Shopping</span>
                         </div>
                     </div>
 
@@ -70,12 +72,11 @@
                             <option value="created">Newest First</option>
                         </select>
                     </div>
-                    <!-- Add Import/Export buttons -->
                     <div class="control-group">
-                        <button class="secondary-btn" onclick="document.getElementById('importFile').click()">
+                        <button class="secondary-btn" data-action="import">
                             <i class="fas fa-file-import"></i> Import
                         </button>
-                        <button class="secondary-btn" onclick="todoApp.exportTasks()">
+                        <button class="secondary-btn" data-action="export">
                             <i class="fas fa-file-export"></i> Export
                         </button>
                         <input type="file" id="importFile" accept="application/json" style="display:none;">
@@ -85,36 +86,31 @@
                 <div class="utility-controls">
                     <div class="search-group">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search tasks..." 
-                               class="search-input">
+                        <input type="text" id="searchInput" placeholder="Search tasks..." class="search-input">
                     </div>
-                    
-                    <div class="btn-group">
-                        <button class="secondary-btn" onclick="todoApp.bulkActions('complete')">
-                            <i class="fas fa-check-double"></i> Complete Selected
-                        </button>
-                        <button class="secondary-btn danger" onclick="todoApp.bulkActions('delete')">
-                            <i class="fas fa-trash"></i> Delete Selected
-                        </button>
-                    </div>
+                    <button class="secondary-btn" data-action="cleanup">
+                        <i class="fas fa-broom"></i> Clean Up Completed
+                    </button>
                 </div>
             </section>
 
             <section class="task-list-section">
                 <div class="list-header">
-                    <span class="header-item">Status</span>
-                    <span class="header-item">Task</span>
-                    <span class="header-item">Due Date</span>
-                    <span class="header-item">Actions</span>
+                    <span>Status</span>
+                    <span>Task</span>
+                    <span>Due Date</span>
+                    <span>Actions</span>
                 </div>
-                <ul class="task-list" id="taskList"></ul>
+                <ul class="task-list" id="taskList">
+                    <!-- Task items will be dynamically added here -->
+                </ul>
 
                 <div class="list-stats">
                     <span id="taskCount">0 tasks</span>
                     <div class="progress-bar">
                         <div class="progress-fill"></div>
                     </div>
-                    <button class="text-btn" onclick="todoApp.clearCompleted()">
+                    <button class="text-btn" data-action="cleanup">
                         <i class="fas fa-broom"></i> Clean Up
                     </button>
                 </div>
@@ -123,9 +119,12 @@
 
         <!-- Modals -->
         <div id="calendarModal" class="modal-overlay hidden">
-            <div class="calendar-modal">
+            <div class="modal-content">
+                <h3>Calendar View</h3>
                 <div id="calendar"></div>
-                <button class="primary-btn" onclick="todoApp.hideCalendar()">Close</button>
+                <button class="primary-btn" onclick="todoApp.hideCalendar()">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
         </div>
 
@@ -140,8 +139,6 @@
                     <li>Sort tasks by due date, priority, or creation date.</li>
                     <li>Import and Export your tasks for backup or transfer.</li>
                     <li>Search for tasks using keywords.</li>
-                    <li>Select multiple tasks to complete or delete them in bulk.</li>
-                    <li>Drag and drop tasks to reorder them.</li>
                     <li>Click on a task to select/deselect it for bulk actions.</li>
                     <li>Completed tasks can be cleared using the 'Clean Up' button.</li>
                     <li>The calendar view helps you visualize your tasks by date.</li>
@@ -158,20 +155,22 @@
                 <p>Completed Tasks: <span id="statsCompletedTasks">0</span></p>
                 <p>Pending Tasks: <span id="statsPendingTasks">0</span></p>
                 <p>Work Tasks: <span id="statsWorkTasks">0</span></p>
-                  <p>Overdue Tasks: <span id="statsOverdueTasks">0</span></p>
+                <p>Overdue Tasks: <span id="statsOverdueTasks">0</span></p>
                 <p>Personal Tasks: <span id="statsPersonalTasks">0</span></p>
                 <p>Shopping Tasks: <span id="statsShoppingTasks">0</span></p>
-                <button class="primary-btn" onclick="todoApp.hideStatistics()">Close</button>
+                <button class="primary-btn" onclick="todoApp.hideStatistics()">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
         </div>
 
-        <!-- Inline Calendar -->
-        <div class="calendar-container">
-            <div id="calendarInline" class="calendar-inline hidden"></div>
-            <button class="calendar-btn" onclick="todoApp.toggleCalendarInline()">Show/Hide Calendar</button>
-        </div>
+        <!-- Floating Add Task Button (for mobile/smaller screens) -->
+        <button class="floating-add-btn primary-btn" id="floatingAddTaskBtn">
+            <i class="fas fa-plus"></i>
+        </button>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="script.js"></script>
 </body>
+</html>
